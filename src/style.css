@@ -1,3 +1,85 @@
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  margin-right: 30px;
+  border-radius: 15px;
+  padding: 5px 15px;
+  border: 1px solid green;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 50px;
+  border: 1px solid green;
+  background-color: skyblue;
+  text-transform: lowercase;
+  font-weight: 600;
+  padding: 5px 15px;
+}
+
+button:hover {
+  background-color: green;
+  color: wheat;
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  background-color: skyblue;
+  margin-bottom: 20px;
+}
+
+.gallery {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 10px;
+  margin-bottom: 10px;
+}
+
+.photo-card {
+  width: calc((100% - (24px * 3)) / 4);
+  border: 1px solid silver;
+  border-radius: 0px 0px 4px 4px;
+  box-shadow: 0px 1px 6px rgba(46, 47, 66, 0.08),
+    0px 1px 1px rgba(46, 47, 66, 0.16), 0px 2px 1px rgba(46, 47, 66, 0.08);
+}
+
+.photo-card-image {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.photo-card-image img {
+  width: 100%;
+}
+
+.info {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.load-more {
+  width: 150px;
+  margin: 0 auto;
+  font-weight: 600;
+  padding: 5px 15px;
+  font-style: italic;
+}
+
 .hidden {
-  display: none
+  display: none;
 }

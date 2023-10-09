@@ -1,36 +1,28 @@
 const { default: axios } = require('axios');
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+import SimpleLightbox from 'simplelightbox';
 
 const refs = {
   form: document.querySelector('.search-form'),
-  input: document.querySelector('[searchQuery]'),
+  input: document.querySelector('.input'),
   gallery: document.querySelector('.gallery'),
-  button: document.querySelector('button'),
-  loadMoreBtn: document.querySelector('.load-more'),
+  btnSubmit: document.querySelector('.btnSubmit'),
+  btnLoadMore: document.querySelector('.load-more'),
 };
 
 let page = 1;
-console.log(page);
+let lastSearchQuery = '';
+let totalHits;
 
-refs.loadMoreBtn.classList.add('hidden');
+refs.btnLoadMore.classList.add('hidden');
 
 refs.form.addEventListener('submit', formSearch);
-refs.loadMoreBtn.addEventListener('click', loadMore);
+refs.btnLoadMore.addEventListener('click', loadMore);
 
-async function formSearch(event) {
-  event.preventDefault();
-  const { searchQuery } = event.currentTarget.elements;
-  console.log(searchQuery.value);
-  await serviseImageSearch(searchQuery.value, page);
-}
-
-function loadMore() {
-  page += 1;
-  console.log(page);
-}
-
-async function serviseImageSearch(searchQuery, page) {
-  const BASE_URL = 'https://pixabay.com/api/',
-    API = '12002814-5debf547df742213b695907de';
+async function serviseImageSearch(searchQuery, page = 1) {
+  const BASE_URL = 'https://pixabay.com/api/';
+  const API = '12002814-5debf547df742213b695907de';
 
   const params = new URLSearchParams({
     key: API,
@@ -39,37 +31,75 @@ async function serviseImageSearch(searchQuery, page) {
     orientation: 'horizontal',
     safesearch: true,
     page,
-    per_page: 5,
+    per_page: 40,
   });
 
-  await axios
-    .get(`${BASE_URL}?${params}`)
-    .then(response => {
-      console.log(response);
-      if (response.data.hits.length === 0) {
-        console.log(
-          "We're sorry, but you've reached the end of search results."
-        );
-      }
-      if (page < response.data.totalHits) {
-        refs.loadMoreBtn.classList.remove('hidden');
-      } else {
-        refs.loadMoreBtn.classList.add('hidden');
-      }
-      createMarkup(response);
-    })
-    .catch(error => console.log(error));
+  try {
+    const response = await axios.get(`${BASE_URL}?${params}`);
+    totalHits = response.data.totalHits;
+    if (response.data.hits.length === 0) {
+      console.log(response.data.hits.length);
+      refs.btnLoadMore.classList.add('hidden');
+      Notify.failure(
+        "We're sorry, but you've reached the end of search results."
+      );
+    } else if (page < totalHits) {
+      const markup = createMarkup(response.data.hits);
+      refs.gallery.insertAdjacentHTML('beforeend', markup);
+      refs.btnLoadMore.classList.remove('hidden');
+    } else {
+      refs.btnLoadMore.classList.add('hidden');
+    }
+    return response.data.hits;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+serviseImageSearch()
+  .then(data => console.log(data))
+  .catch(error => {
+    console.log(error);
+  });
+
+async function formSearch(event) {
+  event.preventDefault();
+  console.log(event);
+  const { searchQuery } = event.currentTarget.elements;
+  console.log(searchQuery);
+  lastSearchQuery = searchQuery.value;
+  refs.gallery.innerHTML = '';
+
+  try {
+    const data = await serviseImageSearch(searchQuery.value);
+    Notify.success(`Hooray! We found ${totalHits} images.`);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function loadMore() {
+  page += 1;
+  console.log(page);
+  serviseImageSearch(lastSearchQuery, page)
+    .then(data => console.log(data))
+    .catch(error => {
+      console.log(error);
+    });
 }
 
 function createMarkup(response) {
-  const gallery = document.querySelector('.gallery');
-  gallery.innerHTML = '';
-  page = 1;
-
-  const addCartToGallery = response.data.hits
+  return response
     .map(
-      dat => `<div class="photo-card">
-      <img src="${dat.webformatURL}" alt="${dat.tags}" loading="lazy" />
+      dat => `
+      <div class="photo-card">
+      <div class="photo-card-image">
+      <a class = "photo-card-image-link" href="${dat.largeImageURL}">
+      <img src="${dat.webformatURL}" alt="${dat.tags}" loading="lazy"/>
+      </a>
+      </div>
       <div class="info">
         <p class="info-item">
           <b>Likes</b>
@@ -88,8 +118,10 @@ function createMarkup(response) {
           ${dat.downloads}
         </p>
       </div>
-    </div>`
+    </div>
+    `
     )
     .join('');
-  gallery.insertAdjacentHTML('beforeend', addCartToGallery);
 }
+
+const lightbox = new SimpleLightbox('.gallery a', { animationSpeed: 250 }).refresh();
