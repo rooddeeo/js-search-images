@@ -46,6 +46,8 @@ async function serviseImageSearch(searchQuery, page = 1) {
     } else if (page < totalHits) {
       const markup = createMarkup(response.data.hits);
       refs.gallery.insertAdjacentHTML('beforeend', markup);
+      const lightbox = new SimpleLightbox('.gallery a', { animationSpeed: 250 });
+      lightbox.refresh();
       refs.btnLoadMore.classList.remove('hidden');
     } else {
       refs.btnLoadMore.classList.add('hidden');
@@ -98,7 +100,7 @@ function createMarkup(response) {
       <div class="photo-card-image">
       <a class = "photo-card-image-link" href="${dat.largeImageURL}">
       <img src="${dat.webformatURL}" alt="${dat.tags}" loading="lazy"/>
-      </a>
+</a>
       </div>
       <div class="info">
         <p class="info-item">
@@ -123,5 +125,3 @@ function createMarkup(response) {
     )
     .join('');
 }
-
-const lightbox = new SimpleLightbox('.gallery a', { animationSpeed: 250 }).refresh();
