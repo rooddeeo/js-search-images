@@ -1,9 +1,8 @@
-const { default: axios } = require('axios');
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import SimpleLightbox from 'simplelightbox';
+import { serviseImageSearch } from './axios.js';
 
-const refs = {
+export const refs = {
   form: document.querySelector('.search-form'),
   input: document.querySelector('.input'),
   gallery: document.querySelector('.gallery'),
@@ -19,45 +18,6 @@ refs.btnLoadMore.classList.add('hidden');
 
 refs.form.addEventListener('submit', formSearch);
 refs.btnLoadMore.addEventListener('click', loadMore);
-
-async function serviseImageSearch(searchQuery, page = 1) {
-  const BASE_URL = 'https://pixabay.com/api/';
-  const API = '12002814-5debf547df742213b695907de';
-
-  const params = new URLSearchParams({
-    key: API,
-    q: searchQuery,
-    image_type: 'photo',
-    orientation: 'horizontal',
-    safesearch: true,
-    page,
-    per_page: 40,
-  });
-
-  try {
-    const response = await axios.get(`${BASE_URL}?${params}`);
-    totalHits = response.data.totalHits;
-    if (response.data.hits.length === 0) {
-      console.log(response.data.hits.length);
-      refs.btnLoadMore.classList.add('hidden');
-      Notify.failure(
-        "We're sorry, but you've reached the end of search results."
-      );
-    } else if (page < totalHits) {
-      const markup = createMarkup(response.data.hits);
-      refs.gallery.insertAdjacentHTML('beforeend', markup);
-      const lightbox = new SimpleLightbox('.gallery a', { animationSpeed: 250 });
-      lightbox.refresh();
-      refs.btnLoadMore.classList.remove('hidden');
-    } else {
-      refs.btnLoadMore.classList.add('hidden');
-    }
-    return response.data.hits;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
 
 serviseImageSearch()
   .then(data => console.log(data))
@@ -92,7 +52,7 @@ function loadMore() {
     });
 }
 
-function createMarkup(response) {
+export function createMarkup(response) {
   return response
     .map(
       dat => `
