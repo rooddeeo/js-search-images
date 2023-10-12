@@ -27,7 +27,6 @@ serviseImageSearch()
 
 async function formSearch(event) {
   event.preventDefault();
-  console.log(event);
   const { searchQuery } = event.currentTarget.elements;
   console.log(searchQuery);
   lastSearchQuery = searchQuery.value;
@@ -35,7 +34,6 @@ async function formSearch(event) {
 
   try {
     const data = await serviseImageSearch(searchQuery.value);
-    Notify.success(`Hooray! We found ${totalHits} images.`);
     console.log(data);
   } catch (error) {
     console.error(error);

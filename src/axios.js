@@ -1,4 +1,5 @@
 const { default: axios } = require('axios');
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import { refs } from './index.js';
 import { createMarkup } from './index.js';
@@ -8,6 +9,8 @@ async function serviseImageSearch(searchQuery, page = 1) {
   const API = '12002814-5debf547df742213b695907de';
 
   const per_page = 40;
+  let totalHits;
+  let totalPage;
 
   const params = new URLSearchParams({
     key: API,
@@ -34,6 +37,7 @@ async function serviseImageSearch(searchQuery, page = 1) {
       );
     } else if (page < totalPage) {
       const markup = createMarkup(response.data.hits);
+      Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
       refs.gallery.insertAdjacentHTML('beforeend', markup);
       const lightbox = new SimpleLightbox('.gallery a', {
         animationSpeed: 250,
