@@ -31,11 +31,14 @@ async function serviseImageSearch(searchQuery, page = 1) {
     totalHits = response.data.totalHits;
     totalPage = Math.ceil(totalHits / per_page);
     if (response.data.hits.length === 0) {
+      refs.btnLoadMore.classList.add('hidden');
       console.log(response.data.hits.length);
       Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
-    } else if (page < totalPage) {
+    } else if (page <= totalPage) {
+      console.log('page', page);
+      console.log('totalPage', totalPage);
       const markup = createMarkup(response.data.hits);
       Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
       refs.gallery.insertAdjacentHTML('beforeend', markup);
@@ -44,8 +47,6 @@ async function serviseImageSearch(searchQuery, page = 1) {
       });
       lightbox.refresh();
       refs.btnLoadMore.classList.remove('hidden');
-    } else {
-      refs.btnLoadMore.classList.add('hidden');
     }
 
     return response.data.hits;

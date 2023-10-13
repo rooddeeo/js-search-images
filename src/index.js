@@ -28,6 +28,15 @@ serviseImageSearch()
 async function formSearch(event) {
   event.preventDefault();
   const { searchQuery } = event.currentTarget.elements;
+  const queryValue = searchQuery.value.trim();
+
+  if (!queryValue) {
+    Notify.failure(
+      "Please enter correct search data."
+    );
+    return;
+  }
+
   console.log(searchQuery);
   lastSearchQuery = searchQuery.value;
   refs.gallery.innerHTML = '';
@@ -57,7 +66,7 @@ export function createMarkup(response) {
       <div class="photo-card">
       <div class="photo-card-image">
       <a class = "photo-card-image-link" href="${dat.largeImageURL}">
-      <img src="${dat.webformatURL}" alt="${dat.tags}" loading="lazy"/>
+      <img src="${dat.webformatURL}" alt="${dat.tags}" title="${dat.tags}" loading="lazy"/>
 </a>
       </div>
       <div class="info">
