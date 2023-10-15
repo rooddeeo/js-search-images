@@ -25,7 +25,6 @@ async function serviseImageSearch(searchQuery, page = 1) {
   if (!searchQuery || searchQuery.trim() === '') {
     return;
   }
-
   try {
     const response = await axios.get(`${BASE_URL}?${params}`);
     totalHits = response.data.totalHits;
@@ -48,7 +47,9 @@ async function serviseImageSearch(searchQuery, page = 1) {
       lightbox.refresh();
       refs.btnLoadMore.classList.remove('hidden');
     }
-
+    if (totalHits <= per_page * page) {
+      refs.btnLoadMore.classList.add('hidden');
+    }
     return response.data.hits;
   } catch (error) {
     console.error(error);

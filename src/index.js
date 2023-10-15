@@ -27,13 +27,12 @@ serviseImageSearch()
 
 async function formSearch(event) {
   event.preventDefault();
+  page = 1;
   const { searchQuery } = event.currentTarget.elements;
   const queryValue = searchQuery.value.trim();
 
   if (!queryValue) {
-    Notify.failure(
-      "Please enter correct search data."
-    );
+    Notify.failure('Please enter correct search data.');
     return;
   }
 
